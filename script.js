@@ -1,15 +1,15 @@
 // Array of animal image paths
 const animalImages = [
-    'public/animals/animal1.jpg',
-    'public/animals/animal2.jpg',
-    'public/animals/animal3.jpg',
-    'public/animals/animal4.jpg',
-    'public/animals/animal5.jpg',
-    'public/animals/animal6.jpg',
-    'public/animals/animal7.jpg',
-    'public/animals/animal8.jpg',
-    'public/animals/animal9.jpg',
-    'public/animals/animal10.jpg'
+    'animals/animal1.jpg',
+    'animals/animal2.jpg',
+    'animals/animal3.jpg',
+    'animals/animal4.jpg',
+    'animals/animal5.jpg',
+    'animals/animal6.jpg',
+    'animals/animal7.jpg',
+    'animals/animal8.jpg',
+    'animals/animal9.jpg',
+    'animals/animal10.jpg'
 ];
 
 let currentIndex = 0;
