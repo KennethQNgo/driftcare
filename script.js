@@ -24,8 +24,6 @@ let cycleInterval = null;
 
 const app = document.getElementById('app');
 const wordmark = document.getElementById('wordmark');
-const pillLabel = document.getElementById('pill-label');
-const heroHeadline = document.getElementById('hero-headline');
 const imageLayer1 = document.getElementById('imageLayer1');
 const imageLayer2 = document.getElementById('imageLayer2');
 const startScreen = document.getElementById('startScreen');
@@ -34,7 +32,6 @@ const conciergeCopy = document.getElementById('concierge-copy');
 const conciergeTrigger = document.getElementById('concierge-trigger');
 const drawer = document.getElementById('drawer');
 const drawerOverlay = document.getElementById('drawer-overlay');
-const status = document.getElementById('status');
 const bgAudio = document.getElementById('bgAudio');
 
 // Filters
@@ -179,33 +176,21 @@ function startSession() {
     // Fade in audio over 4 seconds
     fadeInAudio(4000);
     
-    // Show status briefly
-    showStatus('drifting');
-    
     // Fade wordmark to subtle
     setTimeout(() => {
         wordmark.classList.add('subtle');
     }, 2000);
-    
-    // Hide pill label after 4 seconds
-    setTimeout(() => {
-        pillLabel.classList.add('hidden');
-    }, 4000);
-    
-    // Hide hero headline after 5 seconds
-    setTimeout(() => {
-        heroHeadline.classList.add('hidden');
-    }, 5000);
     
     // Show concierge trigger after 3 seconds
     setTimeout(() => {
         conciergeTrigger.classList.add('visible');
     }, 3000);
     
-    // Start image cycling
+    // Start image cycling after 5 seconds (breathing animation delay)
     setTimeout(() => {
         startCycling();
-    }, 1000);
+        console.log('🌙 Breathing cycle started');
+    }, 5000);
 }
 
 function fadeInAudio(duration) {
@@ -314,19 +299,6 @@ function updateFilters() {
     // Brightness reduction (separate layer)
     const brightnessIntensity = (state.dim / 100) * 0.4;
     brightnessFilter.style.opacity = brightnessIntensity;
-}
-
-// ========================================
-// Status Messages
-// ========================================
-
-function showStatus(message) {
-    status.textContent = message;
-    status.classList.add('visible');
-    
-    setTimeout(() => {
-        status.classList.remove('visible');
-    }, 2000);
 }
 
 // ========================================
