@@ -1,3 +1,45 @@
+/* ========================================
+   Drift Concierge — Design Tokens
+   ======================================== */
+
+:root {
+    /* Background layers */
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --surface: rgba(255, 255, 255, 0.04);
+    --surface2: rgba(255, 255, 255, 0.08);
+    
+    /* Text colors */
+    --text: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.48);
+    --hairline: rgba(255, 255, 255, 0.12);
+    
+    /* Accent colors */
+    --accent: #d4c5a0;
+    --accent2: #b8a78a;
+    
+    /* Border radius */
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    
+    /* Effects */
+    --blur: 24px;
+    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+    
+    /* Animations */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+    
+    /* Transitions */
+    --transition-slow: 2.8s;
+    --transition-med: 1.2s;
+    --transition-fast: 0.4s;
+}
+
+/* ========================================
+   Reset & Base
+   ======================================== */
+
 * {
     margin: 0;
     padding: 0;
@@ -5,66 +47,447 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    letter-spacing: 0.01em;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
-#container {
+/* ========================================
+   Noise Texture Overlay
+   ======================================== */
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* ========================================
+   Vignette Effect
+   ======================================== */
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.3) 80%, rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 999;
+}
+
+/* ========================================
+   Main Stage Container
+   ======================================== */
+
+#app {
     position: relative;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 90vw;
-    max-width: 800px;
-    height: 90vh;
-    max-height: 600px;
-}
-
-#animal {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    transition: opacity 0.8s ease-in-out;
-}
-
-#animal.fade-out {
+    padding: 48px;
     opacity: 0;
+    transition: opacity var(--transition-slow) var(--ease-out);
+}
+
+#app.visible {
+    opacity: 1;
+}
+
+#stage {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    height: 100%;
+    max-height: 640px;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--hairline);
+}
+
+/* ========================================
+   Dual Image Layers (for crossfade)
+   ======================================== */
+
+.image-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--transition-slow) var(--ease-inout);
+}
+
+.image-layer.active {
+    opacity: 1;
+    animation: kenBurns 5s var(--ease-out) forwards;
+}
+
+@keyframes kenBurns {
+    from {
+        transform: scale(1.02);
+    }
+    to {
+        transform: scale(1.06) translate(1%, -1%);
+    }
+}
+
+/* Disable animations for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .image-layer.active {
+        animation: none;
+    }
+    
+    * {
+        transition-duration: 0.1s !important;
+        animation-duration: 0.1s !important;
+    }
+}
+
+/* ========================================
+   Start Screen
+   ======================================== */
+
+#startScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 100;
+    background: rgba(10, 10, 15, 0.7);
+    backdrop-filter: blur(var(--blur));
+    transition: opacity var(--transition-med) var(--ease-out);
+}
+
+#startScreen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#startScreen h1 {
+    font-size: 32px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text);
 }
 
 #startBtn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px 40px;
-    font-size: 24px;
-    font-weight: 600;
-    color: white;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid white;
-    border-radius: 50px;
+    padding: 18px 48px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--bg);
+    background: var(--accent);
+    border: none;
+    border-radius: 40px;
     cursor: pointer;
-    backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    z-index: 10;
+    transition: all var(--transition-fast) var(--ease-out);
+    box-shadow: 0 4px 16px rgba(212, 197, 160, 0.2);
 }
 
 #startBtn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%) scale(1.05);
+    background: var(--accent2);
+    transform: scale(1.04);
+    box-shadow: 0 8px 24px rgba(212, 197, 160, 0.3);
 }
 
 #startBtn:active {
-    transform: translate(-50%, -50%) scale(0.95);
+    transform: scale(0.98);
 }
 
-#startBtn.hidden {
-    display: none;
+/* ========================================
+   Control Dock (Glass morphism)
+   ======================================== */
+
+#dock {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: 20px 28px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 320px;
+    opacity: 0;
+    transition: opacity var(--transition-fast) var(--ease-out);
+    z-index: 500;
+    pointer-events: none;
+}
+
+#dock.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.control-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.control-label {
+    font-size: 13px;
+    font-weight: 450;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    min-width: 80px;
+}
+
+/* ========================================
+   Sliders
+   ======================================== */
+
+input[type="range"] {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: var(--hairline);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(212, 197, 160, 0.4);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 2px 8px rgba(212, 197, 160, 0.4);
+}
+
+/* ========================================
+   Timer Buttons
+   ======================================== */
+
+.timer-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.timer-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out);
+}
+
+.timer-btn:hover {
+    color: var(--text);
+    border-color: var(--accent);
+}
+
+.timer-btn.active {
+    color: var(--bg);
+    background: var(--accent);
+    border-color: var(--accent);
+}
+
+/* ========================================
+   Toggle Switch (Still Mode)
+   ======================================== */
+
+.toggle-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    background: var(--hairline);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.3s var(--ease-out);
+}
+
+.toggle-switch.active {
+    background: var(--accent);
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s var(--ease-out);
+}
+
+.toggle-switch.active::after {
+    transform: translateX(24px);
+}
+
+/* ========================================
+   Status Indicator
+   ======================================== */
+
+#status {
+    position: fixed;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    font-weight: 450;
+    letter-spacing: 0.03em;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity var(--transition-fast) var(--ease-out);
+    z-index: 500;
+    pointer-events: none;
+}
+
+#status.visible {
+    opacity: 1;
+}
+
+/* ========================================
+   Night Filters (Overlays)
+   ======================================== */
+
+#warmthFilter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255, 180, 100, 0) 0%, rgba(255, 150, 80, 0.15) 100%);
+    mix-blend-mode: multiply;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 998;
+    transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+#dimFilter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.4) 100%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 997;
+    transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+/* ========================================
+   Fade to Black (End Timer)
+   ======================================== */
+
+#fadeToBlack {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 996;
+    transition: opacity 6s var(--ease-out);
+}
+
+#fadeToBlack.active {
+    opacity: 1;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 768px) {
+    #app {
+        padding: 24px;
+    }
+    
+    #dock {
+        bottom: 24px;
+        min-width: 280px;
+        padding: 16px 20px;
+    }
+    
+    #stage {
+        max-height: none;
+        aspect-ratio: 4/5;
+    }
+}
+
+@media (max-width: 480px) {
+    #dock {
+        left: 16px;
+        right: 16px;
+        width: auto;
+        min-width: 0;
+        transform: none;
+    }
+    
+    .control-label {
+        min-width: 60px;
+        font-size: 12px;
+    }
 }
