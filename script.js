@@ -5,7 +5,6 @@
 const state = {
     isStarted: false,
     isDrawerOpen: false,
-    isStillMode: false,
     warmth: 40,
     dim: 30,
     volume: 50,
@@ -47,7 +46,6 @@ const brightnessFilter = document.getElementById('brightnessFilter');
 const warmthSlider = document.getElementById('warmthSlider');
 const dimSlider = document.getElementById('dimSlider');
 const volumeSlider = document.getElementById('volumeSlider');
-const stillToggle = document.getElementById('stillToggle');
 
 // ========================================
 // Load Media Assets
@@ -159,12 +157,11 @@ function bindEvents() {
     });
     
     volumeSlider.addEventListener('input', (e) => {
-        state.volume = parseInt(e.target.value);
-        bgAudio.volume = state.volume / 100;
+        const volume = parseInt(e.target.value);
+        state.volume = volume;
+        bgAudio.volume = volume / 100;
+        console.log(`Volume set to: ${volume}%`);
     });
-    
-    // Still mode toggle
-    stillToggle.addEventListener('click', toggleStillMode);
 }
 
 // ========================================
@@ -235,11 +232,10 @@ function fadeInAudio(duration) {
 function startCycling() {
     if (cycleInterval) clearInterval(cycleInterval);
     
+    // Cycle every 10 seconds to match breathing animation
     cycleInterval = setInterval(() => {
-        if (!state.isStillMode) {
-            nextScene();
-        }
-    }, 5000);
+        nextScene();
+    }, 10000);
 }
 
 function nextScene() {
@@ -298,19 +294,6 @@ function closeDrawer() {
     state.isDrawerOpen = false;
     drawer.classList.remove('open');
     drawerOverlay.classList.remove('visible');
-}
-
-// ========================================
-// Still Mode Toggle
-// ========================================
-
-function toggleStillMode() {
-    state.isStillMode = !state.isStillMode;
-    stillToggle.classList.toggle('active', state.isStillMode);
-    
-    if (state.isStillMode) {
-        showStatus('still');
-    }
 }
 
 // ========================================
