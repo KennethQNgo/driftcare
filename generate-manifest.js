@@ -42,12 +42,7 @@ function generateManifest() {
 // Generated on: ${new Date().toISOString()}
 // Total assets: ${mediaFiles.length}
 
-const mediaManifest = ${JSON.stringify(mediaFiles, null, 4)};
-
-// Export for use in script.js
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = mediaManifest;
-}
+window.mediaManifest = ${JSON.stringify(mediaFiles, null, 4)};
 `;
         
         // Write to file

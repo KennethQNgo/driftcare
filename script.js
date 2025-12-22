@@ -1,20 +1,12 @@
 // ========================================
-// Drift Concierge v2 — State & Config
+// Drift - Clean & Minimal
 // ========================================
 
 const state = {
     isStarted: false,
-    isDrawerOpen: false,
-    warmth: 40,
-    dim: 30,
-    volume: 50,
     activeLayerIndex: 0,
     currentImageIndex: 0
 };
-
-// Media assets and focus positions
-let mediaManifest = [];
-let mediaFocusMap = {};
 
 let cycleInterval = null;
 
@@ -28,21 +20,7 @@ const imageLayer1 = document.getElementById('imageLayer1');
 const imageLayer2 = document.getElementById('imageLayer2');
 const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
-const conciergeCopy = document.getElementById('concierge-copy');
-const conciergeTrigger = document.getElementById('concierge-trigger');
-const drawer = document.getElementById('drawer');
-const drawerOverlay = document.getElementById('drawer-overlay');
 const bgAudio = document.getElementById('bgAudio');
-
-// Filters
-const warmthFilter = document.getElementById('warmthFilter');
-const dimFilter = document.getElementById('dimFilter');
-const brightnessFilter = document.getElementById('brightnessFilter');
-
-// Controls
-const warmthSlider = document.getElementById('warmthSlider');
-const dimSlider = document.getElementById('dimSlider');
-const volumeSlider = document.getElementById('volumeSlider');
 
 // ========================================
 // Load Media Assets
@@ -50,7 +28,7 @@ const volumeSlider = document.getElementById('volumeSlider');
 
 async function loadMediaAssets() {
     try {
-        // Load manifest
+        // Load the manifest script
         const manifestScript = document.createElement('script');
         manifestScript.src = 'mediaManifest.js';
         await new Promise((resolve, reject) => {
@@ -59,18 +37,12 @@ async function loadMediaAssets() {
             document.head.appendChild(manifestScript);
         });
         
-        // mediaManifest is now in global scope from the loaded script
-        
-        // Load focus map
-        const focusResponse = await fetch('mediaFocus.json');
-        mediaFocusMap = await focusResponse.json();
-        
-        console.log(`✅ Loaded ${mediaManifest.length} media assets`);
+        console.log(`✅ Loaded ${window.mediaManifest.length} media assets`);
         
     } catch (error) {
-        console.warn('⚠️ Could not load media assets, using fallback');
-        // Fallback to hardcoded list
-        mediaManifest = [
+        console.warn('⚠️ Could not load manifest, using fallback');
+        // Fallback: scan animals directory manually
+        window.mediaManifest = [
             'animals/animal1.jpg',
             'animals/animal2.jpg',
             'animals/animal3.jpg',
@@ -86,19 +58,6 @@ async function loadMediaAssets() {
 }
 
 // ========================================
-// Apply Focus Position (Face-Centering)
-// ========================================
-
-function applyFocusPosition(imgElement, imageSrc) {
-    const focusPosition = mediaFocusMap[imageSrc];
-    if (focusPosition && !focusPosition.startsWith('_')) {
-        imgElement.style.objectPosition = focusPosition;
-    } else {
-        imgElement.style.objectPosition = 'center center';
-    }
-}
-
-// ========================================
 // Initialization
 // ========================================
 
@@ -107,17 +66,10 @@ async function init() {
     await loadMediaAssets();
     
     // Set initial image
-    if (mediaManifest.length > 0) {
-        imageLayer1.src = mediaManifest[0];
-        applyFocusPosition(imageLayer1, mediaManifest[0]);
+    if (window.mediaManifest && window.mediaManifest.length > 0) {
+        imageLayer1.src = window.mediaManifest[0];
         imageLayer1.classList.add('active');
     }
-    
-    // Set initial audio volume
-    bgAudio.volume = state.volume / 100;
-    
-    // Apply initial filters
-    updateFilters();
     
     // Bind events
     bindEvents();
@@ -133,32 +85,7 @@ async function init() {
 // ========================================
 
 function bindEvents() {
-    // Start button
     startBtn.addEventListener('click', startSession);
-    
-    // Concierge trigger
-    conciergeTrigger.addEventListener('click', toggleDrawer);
-    
-    // Drawer overlay (click to close)
-    drawerOverlay.addEventListener('click', closeDrawer);
-    
-    // Sliders
-    warmthSlider.addEventListener('input', (e) => {
-        state.warmth = parseInt(e.target.value);
-        updateFilters();
-    });
-    
-    dimSlider.addEventListener('input', (e) => {
-        state.dim = parseInt(e.target.value);
-        updateFilters();
-    });
-    
-    volumeSlider.addEventListener('input', (e) => {
-        const volume = parseInt(e.target.value);
-        state.volume = volume;
-        bgAudio.volume = volume / 100;
-        console.log(`Volume set to: ${volume}%`);
-    });
 }
 
 // ========================================
@@ -181,11 +108,6 @@ function startSession() {
         wordmark.classList.add('subtle');
     }, 2000);
     
-    // Show concierge trigger after 3 seconds
-    setTimeout(() => {
-        conciergeTrigger.classList.add('visible');
-    }, 3000);
-    
     // Start image cycling after 5 seconds (breathing animation delay)
     setTimeout(() => {
         startCycling();
@@ -194,10 +116,10 @@ function startSession() {
 }
 
 function fadeInAudio(duration) {
-    bgAudio.volume = 0;
+    bgAudio.volume =0;
     bgAudio.play().catch(err => console.error('Audio playback failed:', err));
     
-    const targetVolume = state.volume / 100;
+    const targetVolume = 0.5; // Set to 50% volume
     const step = targetVolume / (duration / 50);
     
     const fadeInterval = setInterval(() => {
@@ -224,9 +146,11 @@ function startCycling() {
 }
 
 function nextScene() {
-    // Move to next image using manifest
-    state.currentImageIndex = (state.currentImageIndex + 1) % mediaManifest.length;
-    const nextImageSrc = mediaManifest[state.currentImageIndex];
+    if (!window.mediaManifest || window.mediaManifest.length === 0) return;
+    
+    // Move to next image
+    state.currentImageIndex = (state.currentImageIndex + 1) % window.mediaManifest.length;
+    const nextImageSrc = window.mediaManifest[state.currentImageIndex];
     
     // Determine layers
     const currentLayer = state.activeLayerIndex === 0 ? imageLayer1 : imageLayer2;
@@ -236,9 +160,6 @@ function nextScene() {
     const preloadImg = new Image();
     preloadImg.onload = () => {
         nextLayer.src = preloadImg.src;
-        
-        // Apply focus position for face-centering
-        applyFocusPosition(nextLayer, nextImageSrc);
         
         requestAnimationFrame(() => {
             // Crossfade
@@ -255,50 +176,6 @@ function nextScene() {
     };
     
     preloadImg.src = nextImageSrc;
-}
-
-// ========================================
-// Drawer Control
-// ========================================
-
-function toggleDrawer() {
-    if (state.isDrawerOpen) {
-        closeDrawer();
-    } else {
-        openDrawer();
-    }
-}
-
-function openDrawer() {
-    state.isDrawerOpen = true;
-    drawer.classList.add('open');
-    drawerOverlay.classList.add('visible');
-}
-
-function closeDrawer() {
-    state.isDrawerOpen = false;
-    drawer.classList.remove('open');
-    drawerOverlay.classList.remove('visible');
-}
-
-// ========================================
-// Enhanced Night Filters
-// ========================================
-
-function updateFilters() {
-    // Warmth: enhanced to be very noticeable
-    // Range 0-100, but we map it to 0-0.6 for strong effect
-    const warmthIntensity = (state.warmth / 100) * 0.6;
-    warmthFilter.style.opacity = warmthIntensity;
-    
-    // Dim: dual approach - vignette + brightness reduction
-    // Vignette intensity
-    const dimVignetteIntensity = (state.dim / 100) * 0.7;
-    dimFilter.style.opacity = dimVignetteIntensity;
-    
-    // Brightness reduction (separate layer)
-    const brightnessIntensity = (state.dim / 100) * 0.4;
-    brightnessFilter.style.opacity = brightnessIntensity;
 }
 
 // ========================================

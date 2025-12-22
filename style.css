@@ -1,8 +1,8 @@
 /* ========================================
-   Drift Concierge — Cosmic Gold Minimal
+   Drift - Clean & Minimal
    ======================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
 
 :root {
     /* Cosmic Dark Palette */
@@ -14,8 +14,6 @@
     /* Text colors */
     --text-warm: rgba(255, 250, 242, 0.95);
     --text-secondary: rgba(255, 250, 242, 0.65);
-    --text-tertiary: rgba(255, 250, 242, 0.35);
-    --hairline: rgba(255, 250, 242, 0.08);
     
     /* Antique Gold */
     --gold: #C5A880;
@@ -23,7 +21,6 @@
     --gold-hairline: rgba(197, 168, 128, 0.12);
     
     /* Radius */
-    --radius-lg: 28px;
     --radius-xl: 36px;
     
     /* Effects */
@@ -32,7 +29,6 @@
     
     /* Easing */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-    --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
     
     /* Transitions */
     --transition-slow: 2.4s;
@@ -40,7 +36,6 @@
     --transition-fast: 0.35s;
     
     /* Fonts */
-    --font-serif: 'Playfair Display', Georgia, serif;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
@@ -81,14 +76,11 @@ body {
     bottom: 0;
     z-index: 0;
     background: 
-        /* Nebula smears */
         radial-gradient(ellipse 60% 50% at 20% 30%, var(--nebula-1) 0%, transparent 50%),
         radial-gradient(ellipse 70% 60% at 80% 70%, var(--nebula-2) 0%, transparent 60%),
-        /* Base gradient */
         linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-brown) 100%);
 }
 
-/* Star field specks (ultra-subtle) */
 #scene::before {
     content: '';
     position: absolute;
@@ -108,7 +100,6 @@ body {
     pointer-events: none;
 }
 
-/* Film grain */
 #scene::after {
     content: '';
     position: absolute;
@@ -121,7 +112,6 @@ body {
     pointer-events: none;
 }
 
-/* Vignette (deeper darkness at edges) */
 body::after {
     content: '';
     position: fixed;
@@ -202,7 +192,21 @@ body::after {
 }
 
 /* ========================================
-   Stage Stack (Stage + Copy)
+   Drifting Text
+   ======================================== */
+
+#drift-text {
+    font-size: 14px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-align: center;
+    opacity: 0;
+    animation: breatheSmooth 10s ease-in-out infinite;
+}
+
+/* ========================================
+   Stage Stack
    ======================================== */
 
 #stage-stack {
@@ -230,7 +234,6 @@ body::after {
                 inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-/* Dual image layers */
 .image-layer {
     position: absolute;
     top: 0;
@@ -255,7 +258,8 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .image-layer.active {
+    .image-layer.active,
+    #drift-text {
         animation: none;
         opacity: 1;
     }
@@ -311,7 +315,7 @@ body::after {
 }
 
 /* ========================================
-   Concierge Copy (In Document Flow)
+   Concierge Copy
    ======================================== */
 
 #concierge-copy {
@@ -328,265 +332,6 @@ body::after {
 
 #concierge-copy.hidden {
     opacity: 0;
-}
-
-/* ========================================
-   Concierge Trigger Button
-   ======================================== */
-
-#concierge-trigger {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(var(--blur));
-    border: 1px solid var(--gold-hairline);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    opacity: 0;
-    transition: all var(--transition-fast) var(--ease-out);
-    z-index: 600;
-}
-
-#concierge-trigger.visible {
-    opacity: 0.3;
-}
-
-#concierge-trigger.visible:hover {
-    opacity: 1;
-    border-color: rgba(197, 168, 128, 0.3);
-    transform: scale(1.08);
-}
-
-#concierge-trigger svg {
-    width: 20px;
-    height: 20px;
-    stroke: var(--gold);
-    stroke-width: 1.5;
-    fill: none;
-}
-
-/* ========================================
-   Concierge Drawer
-   ======================================== */
-
-#drawer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(15, 12, 10, 0.95);
-    backdrop-filter: blur(var(--blur));
-    border-top: 1px solid var(--gold-hairline);
-    padding: 40px 32px 48px;
-    transform: translateY(100%);
-    transition: transform 0.5s var(--ease-out);
-    z-index: 650;
-    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.5);
-}
-
-#drawer.open {
-    transform: translateY(0);
-}
-
-.drawer-content {
-    max-width: 480px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-}
-
-.control-row {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.control-label {
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    min-width: 100px;
-}
-
-/* ========================================
-   Sliders
-   ======================================== */
-
-input[type="range"] {
-    flex: 1;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 1px;
-    background: var(--hairline);
-    border-radius: 1px;
-    outline: none;
-    cursor: pointer;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    background: var(--gold);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s var(--ease-out);
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-}
-
-input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background: var(--gold);
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s var(--ease-out);
-}
-
-input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.15);
-}
-
-/* ========================================
-   Toggle Switch
-   ======================================== */
-
-.toggle-switch {
-    position: relative;
-    width: 52px;
-    height: 28px;
-    background: var(--hairline);
-    border-radius: 14px;
-    cursor: pointer;
-    transition: background 0.3s var(--ease-out);
-}
-
-.toggle-switch.active {
-    background: var(--gold);
-}
-
-.toggle-switch::after {
-    content: '';
-    position: absolute;
-    top: 4px;
-    left: 4px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.3s var(--ease-out);
-}
-
-.toggle-switch.active::after {
-    transform: translateX(24px);
-}
-
-/* ========================================
-   Status Indicator
-   ======================================== */
-
-#status {
-    position: fixed;
-    top: 120px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.06em;
-    color: var(--text-tertiary);
-    opacity: 0;
-    transition: opacity var(--transition-fast) var(--ease-out);
-    z-index: 600;
-    pointer-events: none;
-}
-
-#status.visible {
-    opacity: 1;
-}
-
-/* ========================================
-   Night Filters (Enhanced)
-   ======================================== */
-
-#warmthFilter {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(180deg, 
-        rgba(255, 140, 60, 0.12) 0%, 
-        rgba(255, 120, 40, 0.18) 100%);
-    mix-blend-mode: screen;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 499;
-    transition: opacity var(--transition-fast) var(--ease-out);
-}
-
-#dimFilter {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(ellipse at center, 
-        transparent 15%, 
-        rgba(0, 0, 0, 0.5) 85%, 
-        rgba(0, 0, 0, 0.8) 100%);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 498;
-    transition: opacity var(--transition-fast) var(--ease-out);
-}
-
-#brightnessFilter {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: black;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 497;
-    transition: opacity var(--transition-fast) var(--ease-out);
-}
-
-/* ========================================
-   Drawer Overlay (click to close)
-   ======================================== */
-
-#drawer-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    opacity: 0;
-    pointer-events: none;
-    z-index: 640;
-    transition: opacity 0.3s var(--ease-out);
-}
-
-#drawer-overlay.visible {
-    opacity: 1;
-    pointer-events: all;
 }
 
 /* ========================================
@@ -611,37 +356,5 @@ input[type="range"]::-moz-range-thumb:hover {
         font-size: 11px;
         white-space: normal;
         max-width: 280px;
-    }
-    
-    #concierge-trigger {
-        bottom: 24px;
-        right: 24px;
-    }
-    
-    /* Larger touch targets for mobile sliders */
-    input[type="range"] {
-        height: 4px;
-        padding: 12px 0;
-    }
-    
-    input[type="range"]::-webkit-slider-thumb {
-        width: 24px;
-        height: 24px;
-    }
-    
-    input[type="range"]::-moz-range-thumb {
-        width: 24px;
-        height: 24px;
-    }
-    
-    .control-row {
-        padding: 8px 0;
-    }
-}
-
-@media (max-width: 480px) {
-    .control-label {
-        min-width: 70px;
-        font-size: 10px;
     }
 }

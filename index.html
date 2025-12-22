@@ -27,10 +27,13 @@
     <div id="app">
         <!-- Content Stack -->
         <div id="content-stack">
+            <!-- Drifting Text -->
+            <div id="drift-text">drifting</div>
+            
             <!-- Stage Stack (stage + copy together) -->
             <div id="stage-stack">
-                    <!-- Gallery Frame Stage -->
-                    <div id="stage">
+                <!-- Gallery Frame Stage -->
+                <div id="stage">
                 <!-- Dual image layers for crossfade -->
                 <img class="image-layer" id="imageLayer1" alt="Calm visual">
                 <img class="image-layer" id="imageLayer2" alt="Calm visual">
@@ -48,48 +51,6 @@
         </div>
     </div>
     
-    <!-- Concierge Trigger Button -->
-    <button id="concierge-trigger">
-        <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="1"></circle>
-            <circle cx="12" cy="6" r="1"></circle>
-            <circle cx="12" cy="18" r="1"></circle>
-        </svg>
-    </button>
-    
-    <!-- Drawer Overlay (click to close) -->
-    <div id="drawer-overlay"></div>
-    
-    <!-- Concierge Drawer -->
-    <div id="drawer">
-        <div class="drawer-content">
-            <!-- Volume Row -->
-            <div class="control-row">
-                <span class="control-label">Volume</span>
-                <input type="range" id="volumeSlider" min="0" max="100" value="50">
-            </div>
-            
-            <!-- Warmth Row -->
-            <div class="control-row">
-                <span class="control-label">Warmth</span>
-                <input type="range" id="warmthSlider" min="0" max="100" value="40">
-            </div>
-            
-            <!-- Dim Row -->
-            <div class="control-row">
-                <span class="control-label">Dim</span>
-                <input type="range" id="dimSlider" min="0" max="100" value="30">
-            </div>
-        </div>
-    </div>
-    
-    <!-- Status Indicator -->
-    <div id="status"></div>
-    
-    <!-- Night Filters (Enhanced) -->
-    <div id="warmthFilter"></div>
-    <div id="dimFilter"></div>
-    <div id="brightnessFilter"></div>
     
     <!-- Audio Element -->
     <audio id="bgAudio" loop>
