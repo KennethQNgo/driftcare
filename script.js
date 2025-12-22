@@ -13,18 +13,9 @@ const state = {
     currentImageIndex: 0
 };
 
-const animalImages = [
-    'animals/animal1.jpg',
-    'animals/animal2.jpg',
-    'animals/animal3.jpg',
-    'animals/animal4.jpg',
-    'animals/animal5.jpg',
-    'animals/animal6.jpg',
-    'animals/animal7.jpg',
-    'animals/animal8.jpg',
-    'animals/animal9.jpg',
-    'animals/animal10.jpg'
-];
+// Media assets and focus positions
+let mediaManifest = [];
+let mediaFocusMap = {};
 
 let cycleInterval = null;
 
@@ -59,13 +50,73 @@ const volumeSlider = document.getElementById('volumeSlider');
 const stillToggle = document.getElementById('stillToggle');
 
 // ========================================
+// Load Media Assets
+// ========================================
+
+async function loadMediaAssets() {
+    try {
+        // Load manifest
+        const manifestScript = document.createElement('script');
+        manifestScript.src = 'mediaManifest.js';
+        await new Promise((resolve, reject) => {
+            manifestScript.onload = resolve;
+            manifestScript.onerror = reject;
+            document.head.appendChild(manifestScript);
+        });
+        
+        // mediaManifest is now in global scope from the loaded script
+        
+        // Load focus map
+        const focusResponse = await fetch('mediaFocus.json');
+        mediaFocusMap = await focusResponse.json();
+        
+        console.log(`✅ Loaded ${mediaManifest.length} media assets`);
+        
+    } catch (error) {
+        console.warn('⚠️ Could not load media assets, using fallback');
+        // Fallback to hardcoded list
+        mediaManifest = [
+            'animals/animal1.jpg',
+            'animals/animal2.jpg',
+            'animals/animal3.jpg',
+            'animals/animal4.jpg',
+            'animals/animal5.jpg',
+            'animals/animal6.jpg',
+            'animals/animal7.jpg',
+            'animals/animal8.jpg',
+            'animals/animal9.jpg',
+            'animals/animal10.jpg'
+        ];
+    }
+}
+
+// ========================================
+// Apply Focus Position (Face-Centering)
+// ========================================
+
+function applyFocusPosition(imgElement, imageSrc) {
+    const focusPosition = mediaFocusMap[imageSrc];
+    if (focusPosition && !focusPosition.startsWith('_')) {
+        imgElement.style.objectPosition = focusPosition;
+    } else {
+        imgElement.style.objectPosition = 'center center';
+    }
+}
+
+// ========================================
 // Initialization
 // ========================================
 
-function init() {
+async function init() {
+    // Load media assets first
+    await loadMediaAssets();
+    
     // Set initial image
-    imageLayer1.src = animalImages[0];
-    imageLayer1.classList.add('active');
+    if (mediaManifest.length > 0) {
+        imageLayer1.src = mediaManifest[0];
+        applyFocusPosition(imageLayer1, mediaManifest[0]);
+        imageLayer1.classList.add('active');
+    }
     
     // Set initial audio volume
     bgAudio.volume = state.volume / 100;
@@ -192,9 +243,9 @@ function startCycling() {
 }
 
 function nextScene() {
-    // Move to next image
-    state.currentImageIndex = (state.currentImageIndex + 1) % animalImages.length;
-    const nextImageSrc = animalImages[state.currentImageIndex];
+    // Move to next image using manifest
+    state.currentImageIndex = (state.currentImageIndex + 1) % mediaManifest.length;
+    const nextImageSrc = mediaManifest[state.currentImageIndex];
     
     // Determine layers
     const currentLayer = state.activeLayerIndex === 0 ? imageLayer1 : imageLayer2;
@@ -204,6 +255,9 @@ function nextScene() {
     const preloadImg = new Image();
     preloadImg.onload = () => {
         nextLayer.src = preloadImg.src;
+        
+        // Apply focus position for face-centering
+        applyFocusPosition(nextLayer, nextImageSrc);
         
         requestAnimationFrame(() => {
             // Crossfade
