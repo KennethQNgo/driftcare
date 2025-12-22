@@ -1,17 +1,15 @@
 // ========================================
-// Drift Concierge — State & Configuration
+// Drift Concierge v2 — State & Config
 // ========================================
 
 const state = {
     isStarted: false,
-    isUiVisible: false,
+    isDrawerOpen: false,
     isStillMode: false,
-    timerMinutes: 0,
-    timerEndTimestamp: null,
-    warmth: 30,
-    dim: 20,
+    warmth: 40,
+    dim: 30,
     volume: 50,
-    activeLayerIndex: 0, // 0 or 1 for dual layers
+    activeLayerIndex: 0,
     currentImageIndex: 0
 };
 
@@ -29,29 +27,30 @@ const animalImages = [
 ];
 
 let cycleInterval = null;
-let uiHideTimeout = null;
-let timerCheckInterval = null;
 
 // ========================================
 // DOM Elements
 // ========================================
 
 const app = document.getElementById('app');
+const wordmark = document.getElementById('wordmark');
 const imageLayer1 = document.getElementById('imageLayer1');
 const imageLayer2 = document.getElementById('imageLayer2');
 const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
-const dock = document.getElementById('dock');
+const conciergeCopy = document.getElementById('concierge-copy');
+const conciergeTrigger = document.getElementById('concierge-trigger');
+const drawer = document.getElementById('drawer');
+const drawerOverlay = document.getElementById('drawer-overlay');
 const status = document.getElementById('status');
 const bgAudio = document.getElementById('bgAudio');
 
 // Filters
 const warmthFilter = document.getElementById('warmthFilter');
 const dimFilter = document.getElementById('dimFilter');
-const fadeToBlack = document.getElementById('fadeToBlack');
+const brightnessFilter = document.getElementById('brightnessFilter');
 
 // Controls
-const timerButtons = document.querySelectorAll('.timer-btn');
 const warmthSlider = document.getElementById('warmthSlider');
 const dimSlider = document.getElementById('dimSlider');
 const volumeSlider = document.getElementById('volumeSlider');
@@ -64,6 +63,7 @@ const stillToggle = document.getElementById('stillToggle');
 function init() {
     // Set initial image
     imageLayer1.src = animalImages[0];
+    imageLayer1.classList.add('active');
     
     // Set initial audio volume
     bgAudio.volume = state.volume / 100;
@@ -71,10 +71,10 @@ function init() {
     // Apply initial filters
     updateFilters();
     
-    // Bind event listeners
+    // Bind events
     bindEvents();
     
-    // Show app with fade-in
+    // Fade in app
     setTimeout(() => {
         app.classList.add('visible');
     }, 100);
@@ -88,13 +88,11 @@ function bindEvents() {
     // Start button
     startBtn.addEventListener('click', startSession);
     
-    // Timer buttons
-    timerButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const minutes = parseInt(btn.dataset.minutes);
-            setTimer(minutes);
-        });
-    });
+    // Concierge trigger
+    conciergeTrigger.addEventListener('click', toggleDrawer);
+    
+    // Drawer overlay (click to close)
+    drawerOverlay.addEventListener('click', closeDrawer);
     
     // Sliders
     warmthSlider.addEventListener('input', (e) => {
@@ -114,11 +112,6 @@ function bindEvents() {
     
     // Still mode toggle
     stillToggle.addEventListener('click', toggleStillMode);
-    
-    // Show UI on interaction
-    document.addEventListener('click', showUiTemporarily);
-    document.addEventListener('mousemove', showUiTemporarily);
-    document.addEventListener('keydown', showUiTemporarily);
 }
 
 // ========================================
@@ -133,19 +126,31 @@ function startSession() {
     // Hide start screen
     startScreen.classList.add('hidden');
     
-    // Show status
-    showStatus('drifting');
-    
     // Fade in audio over 4 seconds
     fadeInAudio(4000);
     
-    // Start image cycling after a brief moment
+    // Show status briefly
+    showStatus('drifting');
+    
+    // Fade wordmark to subtle
+    setTimeout(() => {
+        wordmark.classList.add('subtle');
+    }, 2000);
+    
+    // Hide concierge copy after 6 seconds
+    setTimeout(() => {
+        conciergeCopy.classList.add('hidden');
+    }, 6000);
+    
+    // Show concierge trigger after 3 seconds
+    setTimeout(() => {
+        conciergeTrigger.classList.add('visible');
+    }, 3000);
+    
+    // Start image cycling
     setTimeout(() => {
         startCycling();
     }, 1000);
-    
-    // Show controls briefly then auto-hide
-    showUiTemporarily();
 }
 
 function fadeInAudio(duration) {
@@ -184,19 +189,17 @@ function nextScene() {
     state.currentImageIndex = (state.currentImageIndex + 1) % animalImages.length;
     const nextImageSrc = animalImages[state.currentImageIndex];
     
-    // Determine which layer is currently active
+    // Determine layers
     const currentLayer = state.activeLayerIndex === 0 ? imageLayer1 : imageLayer2;
     const nextLayer = state.activeLayerIndex === 0 ? imageLayer2 : imageLayer1;
     
     // Preload next image
     const preloadImg = new Image();
     preloadImg.onload = () => {
-        // Set source on inactive layer
         nextLayer.src = preloadImg.src;
         
-        // Wait a frame for DOM update
         requestAnimationFrame(() => {
-            // Crossfade: activate next, deactivate current
+            // Crossfade
             nextLayer.classList.add('active');
             currentLayer.classList.remove('active');
             
@@ -213,113 +216,27 @@ function nextScene() {
 }
 
 // ========================================
-// UI Visibility (Auto-hide)
+// Drawer Control
 // ========================================
 
-function showUiTemporarily() {
-    if (!state.isStarted) return;
-    
-    // Show dock
-    dock.classList.add('visible');
-    state.isUiVisible = true;
-    
-    // Clear existing timeout
-    if (uiHideTimeout) clearTimeout(uiHideTimeout);
-    
-    // Auto-hide after 4 seconds
-    uiHideTimeout = setTimeout(() => {
-        dock.classList.remove('visible');
-        state.isUiVisible = false;
-    }, 4000);
-}
-
-// ========================================
-// Timer Functionality
-// ========================================
-
-function setTimer(minutes) {
-    // Update UI
-    timerButtons.forEach(btn => {
-        const btnMinutes = parseInt(btn.dataset.minutes);
-        if (btnMinutes === minutes) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-    
-    // Clear existing timer
-    if (timerCheckInterval) {
-        clearInterval(timerCheckInterval);
-        timerCheckInterval = null;
-    }
-    
-    state.timerMinutes = minutes;
-    
-    if (minutes === 0) {
-        state.timerEndTimestamp = null;
-        fadeToBlack.classList.remove('active');
-        return;
-    }
-    
-    // Set end timestamp
-    state.timerEndTimestamp = Date.now() + (minutes * 60 * 1000);
-    
-    // Check timer every second
-    timerCheckInterval = setInterval(checkTimer, 1000);
-}
-
-function checkTimer() {
-    if (!state.timerEndTimestamp) return;
-    
-    const now = Date.now();
-    const remaining = state.timerEndTimestamp - now;
-    
-    // Show "ending soon" at 30 seconds remaining
-    if (remaining <= 30000 && remaining > 29000) {
-        showStatus('ending soon');
-    }
-    
-    // End session when timer expires
-    if (remaining <= 0) {
-        endSession();
+function toggleDrawer() {
+    if (state.isDrawerOpen) {
+        closeDrawer();
+    } else {
+        openDrawer();
     }
 }
 
-function endSession() {
-    // Clear intervals
-    if (timerCheckInterval) {
-        clearInterval(timerCheckInterval);
-        timerCheckInterval = null;
-    }
-    
-    if (cycleInterval) {
-        clearInterval(cycleInterval);
-        cycleInterval = null;
-    }
-    
-    // Fade to black
-    fadeToBlack.classList.add('active');
-    
-    // Fade out audio over 6 seconds
-    fadeOutAudio(6000);
-    
-    showStatus('rest well');
+function openDrawer() {
+    state.isDrawerOpen = true;
+    drawer.classList.add('open');
+    drawerOverlay.classList.add('visible');
 }
 
-function fadeOutAudio(duration) {
-    const startVolume = bgAudio.volume;
-    const step = startVolume / (duration / 50);
-    
-    const fadeInterval = setInterval(() => {
-        if (bgAudio.volume > step) {
-            bgAudio.volume = Math.max(bgAudio.volume - step, 0);
-        } else {
-            bgAudio.volume = 0;
-            bgAudio.pause();
-            clearInterval(fadeInterval);
-        }
-    }, 50);
+function closeDrawer() {
+    state.isDrawerOpen = false;
+    drawer.classList.remove('open');
+    drawerOverlay.classList.remove('visible');
 }
 
 // ========================================
@@ -336,15 +253,23 @@ function toggleStillMode() {
 }
 
 // ========================================
-// Night Filters
+// Enhanced Night Filters
 // ========================================
 
 function updateFilters() {
-    // Warmth filter
-    warmthFilter.style.opacity = state.warmth / 100;
+    // Warmth: enhanced to be very noticeable
+    // Range 0-100, but we map it to 0-0.6 for strong effect
+    const warmthIntensity = (state.warmth / 100) * 0.6;
+    warmthFilter.style.opacity = warmthIntensity;
     
-    // Dim filter
-    dimFilter.style.opacity = state.dim / 100;
+    // Dim: dual approach - vignette + brightness reduction
+    // Vignette intensity
+    const dimVignetteIntensity = (state.dim / 100) * 0.7;
+    dimFilter.style.opacity = dimVignetteIntensity;
+    
+    // Brightness reduction (separate layer)
+    const brightnessIntensity = (state.dim / 100) * 0.4;
+    brightnessFilter.style.opacity = brightnessIntensity;
 }
 
 // ========================================

@@ -1,39 +1,42 @@
 /* ========================================
-   Drift Concierge — Design Tokens
+   Drift Concierge v2 — Design Tokens
    ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap');
 
 :root {
     /* Background layers */
-    --bg: #0a0a0f;
-    --bg2: #12121a;
-    --surface: rgba(255, 255, 255, 0.04);
-    --surface2: rgba(255, 255, 255, 0.08);
+    --bg: #08080c;
+    --bg2: #0f0f14;
+    --surface: rgba(255, 255, 255, 0.03);
+    --surface2: rgba(255, 255, 255, 0.06);
     
     /* Text colors */
-    --text: rgba(255, 255, 255, 0.92);
-    --muted: rgba(255, 255, 255, 0.48);
-    --hairline: rgba(255, 255, 255, 0.12);
+    --text: rgba(255, 255, 255, 0.95);
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --text-tertiary: rgba(255, 255, 255, 0.4);
+    --hairline: rgba(255, 255, 255, 0.08);
     
-    /* Accent colors */
+    /* Accent */
     --accent: #d4c5a0;
-    --accent2: #b8a78a;
+    --accent-dim: #a89574;
     
-    /* Border radius */
-    --radius-lg: 24px;
-    --radius-xl: 32px;
+    /* Radius */
+    --radius-lg: 28px;
+    --radius-xl: 36px;
     
     /* Effects */
-    --blur: 24px;
-    --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --blur: 32px;
+    --shadow-soft: 0 12px 48px rgba(0, 0, 0, 0.5);
     
-    /* Animations */
+    /* Easing */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
     
     /* Transitions */
-    --transition-slow: 2.8s;
-    --transition-med: 1.2s;
-    --transition-fast: 0.4s;
+    --transition-slow: 2.4s;
+    --transition-med: 1.0s;
+    --transition-fast: 0.35s;
 }
 
 /* ========================================
@@ -47,21 +50,46 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-weight: 400;
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: 0.01em;
     color: var(--text);
-    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    background: var(--bg);
     min-height: 100vh;
     overflow: hidden;
     position: relative;
 }
 
 /* ========================================
-   Noise Texture Overlay
+   Atmospheric Background
    ======================================== */
 
+#atmosphere {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(100, 90, 120, 0.08) 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    animation: breathe 40s ease-in-out infinite;
+    z-index: 0;
+}
+
+@keyframes breathe {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #atmosphere {
+        animation: none;
+        opacity: 0.6;
+    }
+}
+
+/* Noise texture */
 body::before {
     content: '';
     position: fixed;
@@ -69,16 +97,13 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.5;
     pointer-events: none;
-    z-index: 1000;
+    z-index: 1001;
 }
 
-/* ========================================
-   Vignette Effect
-   ======================================== */
-
+/* Vignette */
 body::after {
     content: '';
     position: fixed;
@@ -86,14 +111,49 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(ellipse at center, transparent 20%, rgba(0, 0, 0, 0.3) 80%, rgba(0, 0, 0, 0.6) 100%);
+    background: radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0.5) 100%);
     pointer-events: none;
-    opacity: 0.6;
-    z-index: 999;
+    opacity: 1;
+    z-index: 1000;
+    transition: opacity 0.8s var(--ease-out);
 }
 
 /* ========================================
-   Main Stage Container
+   Wordmark
+   ======================================== */
+
+#wordmark {
+    position: fixed;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 600;
+    text-align: center;
+    opacity: 0.7;
+    transition: opacity var(--transition-med) var(--ease-out);
+    pointer-events: none;
+}
+
+#wordmark.subtle {
+    opacity: 0.25;
+}
+
+.wordmark-primary {
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--text);
+}
+
+.wordmark-secondary {
+    font-size: 24px;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    color: var(--text-tertiary);
+}
+
+/* ========================================
+   Main Container
    ======================================== */
 
 #app {
@@ -103,32 +163,34 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 48px;
+    padding: 64px 48px;
     opacity: 0;
     transition: opacity var(--transition-slow) var(--ease-out);
+    z-index: 1;
 }
 
 #app.visible {
     opacity: 1;
 }
 
+/* ========================================
+   Gallery Frame Stage
+   ======================================== */
+
 #stage {
     position: relative;
     width: 100%;
-    max-width: 900px;
-    height: 100%;
-    max-height: 640px;
+    max-width: 840px;
+    aspect-ratio: 16 / 10;
     background: var(--surface);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: var(--shadow-soft);
-    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-soft), 
+                0 0 0 1px var(--hairline),
+                0 0 80px rgba(212, 197, 160, 0.06);
 }
 
-/* ========================================
-   Dual Image Layers (for crossfade)
-   ======================================== */
-
+/* Dual image layers */
 .image-layer {
     position: absolute;
     top: 0;
@@ -146,23 +208,13 @@ body::after {
 }
 
 @keyframes kenBurns {
-    from {
-        transform: scale(1.02);
-    }
-    to {
-        transform: scale(1.06) translate(1%, -1%);
-    }
+    from { transform: scale(1.01); }
+    to { transform: scale(1.04) translate(0.5%, -0.5%); }
 }
 
-/* Disable animations for reduced motion */
 @media (prefers-reduced-motion: reduce) {
     .image-layer.active {
         animation: none;
-    }
-    
-    * {
-        transition-duration: 0.1s !important;
-        animation-duration: 0.1s !important;
     }
 }
 
@@ -180,9 +232,9 @@ body::after {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 24px;
+    gap: 32px;
     z-index: 100;
-    background: rgba(10, 10, 15, 0.7);
+    background: rgba(8, 8, 12, 0.75);
     backdrop-filter: blur(var(--blur));
     transition: opacity var(--transition-med) var(--ease-out);
 }
@@ -192,31 +244,23 @@ body::after {
     pointer-events: none;
 }
 
-#startScreen h1 {
-    font-size: 32px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--text);
-}
-
 #startBtn {
-    padding: 18px 48px;
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: 0.03em;
+    padding: 16px 56px;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
     color: var(--bg);
     background: var(--accent);
     border: none;
-    border-radius: 40px;
+    border-radius: 32px;
     cursor: pointer;
     transition: all var(--transition-fast) var(--ease-out);
-    box-shadow: 0 4px 16px rgba(212, 197, 160, 0.2);
+    box-shadow: 0 4px 20px rgba(212, 197, 160, 0.25);
 }
 
 #startBtn:hover {
-    background: var(--accent2);
-    transform: scale(1.04);
-    box-shadow: 0 8px 24px rgba(212, 197, 160, 0.3);
+    background: var(--accent-dim);
+    transform: scale(1.02);
 }
 
 #startBtn:active {
@@ -224,47 +268,114 @@ body::after {
 }
 
 /* ========================================
-   Control Dock (Glass morphism)
+   Concierge Copy
    ======================================== */
 
-#dock {
+#concierge-copy {
     position: fixed;
-    bottom: 32px;
+    bottom: 80px;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--surface);
-    backdrop-filter: blur(var(--blur));
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius-lg);
-    padding: 20px 28px;
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 320px;
-    opacity: 0;
-    transition: opacity var(--transition-fast) var(--ease-out);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    opacity: 1;
+    transition: opacity var(--transition-slow) var(--ease-out);
     z-index: 500;
     pointer-events: none;
+    white-space: nowrap;
 }
 
-#dock.visible {
+#concierge-copy.hidden {
+    opacity: 0;
+}
+
+/* ========================================
+   Concierge Trigger Button
+   ======================================== */
+
+#concierge-trigger {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--surface2);
+    backdrop-filter: blur(var(--blur));
+    border: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: all var(--transition-fast) var(--ease-out);
+    z-index: 600;
+}
+
+#concierge-trigger.visible {
+    opacity: 0.4;
+}
+
+#concierge-trigger.visible:hover {
     opacity: 1;
-    pointer-events: all;
+    transform: scale(1.08);
+}
+
+#concierge-trigger svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text);
+    stroke-width: 1.5;
+    fill: none;
+}
+
+/* ========================================
+   Concierge Drawer
+   ======================================== */
+
+#drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(12, 12, 16, 0.95);
+    backdrop-filter: blur(var(--blur));
+    border-top: 1px solid var(--hairline);
+    padding: 32px 24px 40px;
+    transform: translateY(100%);
+    transition: transform 0.5s var(--ease-out);
+    z-index: 650;
+    box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.4);
+}
+
+#drawer.open {
+    transform: translateY(0);
+}
+
+.drawer-content {
+    max-width: 480px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .control-row {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 }
 
 .control-label {
-    font-size: 13px;
-    font-weight: 450;
-    letter-spacing: 0.02em;
-    color: var(--muted);
-    min-width: 80px;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    min-width: 100px;
 }
 
 /* ========================================
@@ -275,9 +386,9 @@ input[type="range"] {
     flex: 1;
     -webkit-appearance: none;
     appearance: none;
-    height: 4px;
+    height: 2px;
     background: var(--hairline);
-    border-radius: 2px;
+    border-radius: 1px;
     outline: none;
     cursor: pointer;
 }
@@ -285,78 +396,42 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background: var(--accent);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.2s var(--ease-out);
+    transition: transform 0.2s var(--ease-out);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 2px 8px rgba(212, 197, 160, 0.4);
+    transform: scale(1.15);
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     background: var(--accent);
     border-radius: 50%;
     border: none;
     cursor: pointer;
-    transition: all 0.2s var(--ease-out);
+    transition: transform 0.2s var(--ease-out);
 }
 
 input[type="range"]::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 2px 8px rgba(212, 197, 160, 0.4);
+    transform: scale(1.15);
 }
 
 /* ========================================
-   Timer Buttons
-   ======================================== */
-
-.timer-buttons {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.timer-btn {
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    color: var(--muted);
-    background: transparent;
-    border: 1px solid var(--hairline);
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.2s var(--ease-out);
-}
-
-.timer-btn:hover {
-    color: var(--text);
-    border-color: var(--accent);
-}
-
-.timer-btn.active {
-    color: var(--bg);
-    background: var(--accent);
-    border-color: var(--accent);
-}
-
-/* ========================================
-   Toggle Switch (Still Mode)
+   Toggle Switch
    ======================================== */
 
 .toggle-switch {
     position: relative;
-    width: 48px;
-    height: 24px;
+    width: 52px;
+    height: 28px;
     background: var(--hairline);
-    border-radius: 12px;
+    border-radius: 14px;
     cursor: pointer;
     transition: background 0.3s var(--ease-out);
 }
@@ -368,10 +443,10 @@ input[type="range"]::-moz-range-thumb:hover {
 .toggle-switch::after {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
     background: white;
     border-radius: 50%;
     transition: transform 0.3s var(--ease-out);
@@ -387,16 +462,16 @@ input[type="range"]::-moz-range-thumb:hover {
 
 #status {
     position: fixed;
-    top: 32px;
+    top: 120px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 13px;
-    font-weight: 450;
-    letter-spacing: 0.03em;
-    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
     opacity: 0;
     transition: opacity var(--transition-fast) var(--ease-out);
-    z-index: 500;
+    z-index: 600;
     pointer-events: none;
 }
 
@@ -405,7 +480,7 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 /* ========================================
-   Night Filters (Overlays)
+   Night Filters (Enhanced)
    ======================================== */
 
 #warmthFilter {
@@ -414,11 +489,13 @@ input[type="range"]::-moz-range-thumb:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(255, 180, 100, 0) 0%, rgba(255, 150, 80, 0.15) 100%);
-    mix-blend-mode: multiply;
+    background: linear-gradient(180deg, 
+        rgba(255, 160, 80, 0.15) 0%, 
+        rgba(255, 140, 60, 0.25) 100%);
+    mix-blend-mode: screen;
     opacity: 0;
     pointer-events: none;
-    z-index: 998;
+    z-index: 999;
     transition: opacity var(--transition-fast) var(--ease-out);
 }
 
@@ -428,7 +505,24 @@ input[type="range"]::-moz-range-thumb:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.4) 100%);
+    background: radial-gradient(ellipse at center, 
+        transparent 20%, 
+        rgba(0, 0, 0, 0.5) 90%, 
+        rgba(0, 0, 0, 0.7) 100%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 998;
+    transition: opacity var(--transition-fast) var(--ease-out);
+}
+
+/* Brightness overlay for dim */
+#brightnessFilter {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
     opacity: 0;
     pointer-events: none;
     z-index: 997;
@@ -436,58 +530,66 @@ input[type="range"]::-moz-range-thumb:hover {
 }
 
 /* ========================================
-   Fade to Black (End Timer)
+   Drawer Overlay (click to close)
    ======================================== */
 
-#fadeToBlack {
+#drawer-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--bg);
+    background: transparent;
     opacity: 0;
     pointer-events: none;
-    z-index: 996;
-    transition: opacity 6s var(--ease-out);
+    z-index: 640;
+    transition: opacity 0.3s var(--ease-out);
 }
 
-#fadeToBlack.active {
+#drawer-overlay.visible {
     opacity: 1;
+    pointer-events: all;
 }
 
 /* ========================================
-   Responsive Adjustments
+   Responsive
    ======================================== */
 
 @media (max-width: 768px) {
     #app {
-        padding: 24px;
-    }
-    
-    #dock {
-        bottom: 24px;
-        min-width: 280px;
-        padding: 16px 20px;
+        padding: 48px 24px;
     }
     
     #stage {
-        max-height: none;
-        aspect-ratio: 4/5;
+        aspect-ratio: 4 / 5;
+    }
+    
+    #wordmark {
+        top: 32px;
+    }
+    
+    .wordmark-primary,
+    .wordmark-secondary {
+        font-size: 20px;
+    }
+    
+    #concierge-copy {
+        font-size: 11px;
+        bottom: 100px;
+        padding: 0 24px;
+        white-space: normal;
+        max-width: 280px;
+    }
+    
+    #concierge-trigger {
+        bottom: 24px;
+        right: 24px;
     }
 }
 
 @media (max-width: 480px) {
-    #dock {
-        left: 16px;
-        right: 16px;
-        width: auto;
-        min-width: 0;
-        transform: none;
-    }
-    
     .control-label {
-        min-width: 60px;
-        font-size: 12px;
+        min-width: 70px;
+        font-size: 11px;
     }
 }
