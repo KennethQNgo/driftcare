@@ -34,6 +34,8 @@ let cycleInterval = null;
 
 const app = document.getElementById('app');
 const wordmark = document.getElementById('wordmark');
+const pillLabel = document.getElementById('pill-label');
+const heroHeadline = document.getElementById('hero-headline');
 const imageLayer1 = document.getElementById('imageLayer1');
 const imageLayer2 = document.getElementById('imageLayer2');
 const startScreen = document.getElementById('startScreen');
@@ -137,10 +139,15 @@ function startSession() {
         wordmark.classList.add('subtle');
     }, 2000);
     
-    // Hide concierge copy after 6 seconds
+    // Hide pill label after 4 seconds
     setTimeout(() => {
-        conciergeCopy.classList.add('hidden');
-    }, 6000);
+        pillLabel.classList.add('hidden');
+    }, 4000);
+    
+    // Hide hero headline after 5 seconds
+    setTimeout(() => {
+        heroHeadline.classList.add('hidden');
+    }, 5000);
     
     // Show concierge trigger after 3 seconds
     setTimeout(() => {
