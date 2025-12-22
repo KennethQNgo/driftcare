@@ -49,6 +49,11 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     font-weight: 400;
@@ -56,8 +61,6 @@ body {
     letter-spacing: 0.01em;
     color: var(--text);
     background: var(--bg);
-    min-height: 100vh;
-    overflow: hidden;
     position: relative;
 }
 
@@ -157,20 +160,31 @@ body::after {
    ======================================== */
 
 #app {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 64px 48px;
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
     opacity: 0;
     transition: opacity var(--transition-slow) var(--ease-out);
     z-index: 1;
+    min-height: 100svh;
 }
 
 #app.visible {
     opacity: 1;
+}
+
+/* ========================================
+   Stage Stack (Column Layout)
+   ======================================== */
+
+#stage-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 90vw;
+    width: 100%;
 }
 
 /* ========================================
@@ -268,14 +282,10 @@ body::after {
 }
 
 /* ========================================
-   Concierge Copy
+   Concierge Copy (In Document Flow)
    ======================================== */
 
 #concierge-copy {
-    position: fixed;
-    bottom: 80px;
-    left: 50%;
-    transform: translateX(-50%);
     text-align: center;
     font-size: 13px;
     font-weight: 400;
@@ -283,7 +293,6 @@ body::after {
     color: var(--text-secondary);
     opacity: 1;
     transition: opacity var(--transition-slow) var(--ease-out);
-    z-index: 500;
     pointer-events: none;
     white-space: nowrap;
 }

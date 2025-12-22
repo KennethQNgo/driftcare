@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>drift.care — a concierge for sleep</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" href="/assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-16.png" sizes="16x16">
+    <link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png">
+    <meta name="theme-color" content="#08080c">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -17,21 +25,24 @@
     
     <!-- Main App Container -->
     <div id="app">
-        <!-- Gallery Frame Stage -->
-        <div id="stage">
-            <!-- Dual image layers for crossfade -->
-            <img class="image-layer" id="imageLayer1" alt="Calm visual">
-            <img class="image-layer" id="imageLayer2" alt="Calm visual">
-            
-            <!-- Start Screen Overlay -->
-            <div id="startScreen">
-                <button id="startBtn">Begin</button>
+        <!-- Stage Stack (stage + copy together) -->
+        <div id="stage-stack">
+            <!-- Gallery Frame Stage -->
+            <div id="stage">
+                <!-- Dual image layers for crossfade -->
+                <img class="image-layer" id="imageLayer1" alt="Calm visual">
+                <img class="image-layer" id="imageLayer2" alt="Calm visual">
+                
+                <!-- Start Screen Overlay -->
+                <div id="startScreen">
+                    <button id="startBtn">Begin</button>
+                </div>
             </div>
+            
+            <!--Concierge Copy (in document flow, under stage) -->
+            <div id="concierge-copy">settle in. we'll handle the rest.</div>
         </div>
     </div>
-    
-    <!-- Concierge Copy -->
-    <div id="concierge-copy">settle in. we'll handle the rest.</div>
     
     <!-- Concierge Trigger Button -->
     <button id="concierge-trigger">
