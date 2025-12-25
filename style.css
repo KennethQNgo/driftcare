@@ -252,7 +252,7 @@ body::after {
     object-fit: contain;           /* Show full image, no cropping */
     object-position: center center;
     opacity: 0;
-    transition: opacity 5s ease-in-out;  /* 5-second smooth fade */
+    transition: opacity 3s ease-in-out;  /* 3-second smooth fade */
     filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.4));
     will-change: opacity;
 }

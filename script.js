@@ -169,10 +169,10 @@ function fadeInAudio(duration) {
 function startCycling() {
     if (cycleInterval) clearInterval(cycleInterval);
     
-    // Cycle every 5 seconds to match breathing animation
+    // Cycle every 3 seconds for dynamic viewing
     cycleInterval = setInterval(() => {
         nextScene();
-    }, 5000);
+    }, 3000);
 }
 
 function nextScene() {
