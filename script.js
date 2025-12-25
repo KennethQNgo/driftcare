@@ -138,11 +138,11 @@ function startSession() {
         wordmark.classList.add('subtle');
     }, 2000);
     
-    // Start image cycling after 5 seconds (breathing animation delay)
+    // Start image cycling after 3 seconds to match the transition timing
     setTimeout(() => {
         startCycling();
-        console.log('🌙 Breathing cycle started');
-    }, 5000);
+        console.log('🌙 Image cycle started');
+    }, 3000);
 }
 
 function fadeInAudio(duration) {
