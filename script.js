@@ -9,6 +9,17 @@ const state = {
 };
 
 let cycleInterval = null;
+let shuffledAssets = [];
+
+// Fisher-Yates shuffle algorithm
+function shuffle(array) {
+    const arr = array.slice(); // Create a copy
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 
 // ========================================
 // DOM Elements
@@ -65,9 +76,13 @@ async function init() {
     // Load media assets first
     await loadMediaAssets();
     
-    // Set initial image
+    // Shuffle assets for randomized playback
     if (window.mediaManifest && window.mediaManifest.length > 0) {
-        imageLayer1.src = window.mediaManifest[0];
+        shuffledAssets = shuffle(window.mediaManifest);
+        console.log(`🎲 Shuffled ${shuffledAssets.length} images`);
+        
+        // Set initial image from shuffled list
+        imageLayer1.src = shuffledAssets[0];
         imageLayer1.classList.add('active');
     }
     
@@ -100,8 +115,15 @@ function startSession() {
     // Hide start screen
     startScreen.classList.add('hidden');
     
-    // Fade in audio over 4 seconds
-    fadeInAudio(4000);
+    // Set random audio start position
+    bgAudio.addEventListener('loadedmetadata', () => {
+        const randomStart = Math.random() * bgAudio.duration;
+        bgAudio.currentTime = randomStart;
+        console.log(`🎵 Audio starting at ${randomStart.toFixed(1)}s`);
+    }, { once: true });
+    
+    // Fade in audio over 5 seconds
+    fadeInAudio(5000);
     
     // Fade wordmark to subtle
     setTimeout(() => {
@@ -116,7 +138,7 @@ function startSession() {
 }
 
 function fadeInAudio(duration) {
-    bgAudio.volume =0;
+    bgAudio.volume = 0;
     bgAudio.play().catch(err => console.error('Audio playback failed:', err));
     
     const targetVolume = 0.5; // Set to 50% volume
@@ -139,18 +161,25 @@ function fadeInAudio(duration) {
 function startCycling() {
     if (cycleInterval) clearInterval(cycleInterval);
     
-    // Cycle every 10 seconds to match breathing animation
+    // Cycle every 5 seconds to match breathing animation
     cycleInterval = setInterval(() => {
         nextScene();
-    }, 10000);
+    }, 5000);
 }
 
 function nextScene() {
-    if (!window.mediaManifest || window.mediaManifest.length === 0) return;
+    if (!shuffledAssets || shuffledAssets.length === 0) return;
     
-    // Move to next image
-    state.currentImageIndex = (state.currentImageIndex + 1) % window.mediaManifest.length;
-    const nextImageSrc = window.mediaManifest[state.currentImageIndex];
+    // Move to next image in shuffled list
+    state.currentImageIndex = (state.currentImageIndex + 1) % shuffledAssets.length;
+    
+    // If we've reached the end (wrapped back to 0), reshuffle for infinite variety
+    if (state.currentImageIndex === 0) {
+        shuffledAssets = shuffle(window.mediaManifest);
+        console.log('🔄 Reshuffled assets for continuous playback');
+    }
+    
+    const nextImageSrc = shuffledAssets[state.currentImageIndex];
     
     // Determine layers
     const currentLayer = state.activeLayerIndex === 0 ? imageLayer1 : imageLayer2;

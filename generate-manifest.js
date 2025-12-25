@@ -18,19 +18,35 @@ const OUTPUT_FILE = path.join(__dirname, 'mediaManifest.js');
 // Supported file extensions
 const VALID_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.mp4', '.webm', '.webp'];
 
+// Recursively scan directory for media files
+function scanDirectory(dir, baseDir = dir) {
+    let results = [];
+    const files = fs.readdirSync(dir);
+    
+    for (const file of files) {
+        const fullPath = path.join(dir, file);
+        const stat = fs.statSync(fullPath);
+        
+        if (stat.isDirectory()) {
+            // Recursively scan subdirectory
+            results = results.concat(scanDirectory(fullPath, baseDir));
+        } else {
+            const ext = path.extname(file).toLowerCase();
+            if (VALID_EXTENSIONS.includes(ext)) {
+                // Store relative path from base directory
+                const relativePath = path.relative(baseDir, fullPath);
+                results.push(`animals/${relativePath}`);
+            }
+        }
+    }
+    
+    return results;
+}
+
 function generateManifest() {
     try {
-        // Read all files from the animals directory
-        const files = fs.readdirSync(MEDIA_DIR);
-        
-        // Filter for valid media files only
-        const mediaFiles = files
-            .filter(file => {
-                const ext = path.extname(file).toLowerCase();
-                return VALID_EXTENSIONS.includes(ext);
-            })
-            .sort() // Sort alphabetically for consistency
-            .map(file => `animals/${file}`);
+        // Recursively scan for media files
+        const mediaFiles = scanDirectory(MEDIA_DIR).sort();
         
         if (mediaFiles.length === 0) {
             console.warn('⚠️  No media files found in animals/ directory');
