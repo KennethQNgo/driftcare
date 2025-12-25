@@ -115,15 +115,23 @@ function startSession() {
     // Hide start screen
     startScreen.classList.add('hidden');
     
-    // Set random audio start position
-    bgAudio.addEventListener('loadedmetadata', () => {
+    // Set random audio start position and fade in
+    if (bgAudio.readyState >= 1) {
+        // Metadata already loaded
         const randomStart = Math.random() * bgAudio.duration;
         bgAudio.currentTime = randomStart;
         console.log(`🎵 Audio starting at ${randomStart.toFixed(1)}s`);
-    }, { once: true });
-    
-    // Fade in audio over 5 seconds
-    fadeInAudio(5000);
+        fadeInAudio(5000);
+    } else {
+        // Wait for metadata to load
+        bgAudio.addEventListener('loadedmetadata', () => {
+            const randomStart = Math.random() * bgAudio.duration;
+            bgAudio.currentTime = randomStart;
+            console.log(`🎵 Audio starting at ${randomStart.toFixed(1)}s`);
+            fadeInAudio(5000);
+        }, { once: true });
+        bgAudio.load(); // Trigger loading if needed
+    }
     
     // Fade wordmark to subtle
     setTimeout(() => {
