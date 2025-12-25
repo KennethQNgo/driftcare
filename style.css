@@ -149,6 +149,7 @@ body::after {
     font-weight: 300;
     letter-spacing: 0.14em;
     color: var(--text-warm);
+    text-shadow: 0 0 12px rgba(255, 250, 242, 0.15);
 }
 
 .wordmark-secondary {
@@ -156,6 +157,7 @@ body::after {
     font-weight: 300;
     letter-spacing: 0.14em;
     color: var(--gold);
+    text-shadow: 0 0 16px rgba(197, 168, 128, 0.25);
 }
 
 /* ========================================
@@ -201,8 +203,10 @@ body::after {
     letter-spacing: 0.1em;
     color: var(--gold);
     text-align: center;
+    text-shadow: 0 0 8px rgba(197, 168, 128, 0.3);
     opacity: 0;
     animation: breatheSmooth 10s ease-in-out infinite;
+    will-change: opacity;
 }
 
 /* ========================================
@@ -224,26 +228,33 @@ body::after {
 #stage {
     position: relative;
     width: 100%;
-    max-width: 800px;
-    aspect-ratio: 16 / 10;
-    background: rgba(255, 255, 255, 0.01);
+    max-width: 600px;  /* Reduced from 800px for better image fit */
+    aspect-ratio: 4 / 5;  /* More portrait-friendly for animal images */
+    background: rgba(0, 0, 0, 0.3);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    box-shadow: var(--shadow-soft), 
-                0 0 0 1px var(--gold-hairline),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.8),
+        0 0 0 2px rgba(197, 168, 128, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02),
+        0 0 40px rgba(197, 168, 128, 0.05);
+    padding: 12px;  /* Inner padding for luxury feel */
 }
 
 .image-layer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+    height: calc(100% - 24px);
     object-fit: contain;           /* Show full image, no cropping */
     object-position: center center;
     opacity: 0;
     transition: opacity 5s ease-in-out;  /* 5-second smooth fade */
+    filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.4));
+    will-change: opacity;
 }
 
 .image-layer.active {
