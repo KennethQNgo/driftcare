@@ -31,6 +31,7 @@ const imageLayer1 = document.getElementById('imageLayer1');
 const imageLayer2 = document.getElementById('imageLayer2');
 const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
+const audioSelect = document.getElementById('audioSelect');
 const bgAudio = document.getElementById('bgAudio');
 
 // ========================================
@@ -86,6 +87,12 @@ async function init() {
         imageLayer1.classList.add('active');
     }
     
+    // Load saved audio preference
+    const savedAudio = localStorage.getItem('driftcare_audio');
+    if (savedAudio && audioSelect) {
+        audioSelect.value = savedAudio;
+    }
+    
     // Bind events
     bindEvents();
     
@@ -101,6 +108,14 @@ async function init() {
 
 function bindEvents() {
     startBtn.addEventListener('click', startSession);
+    
+    // Save audio preference when changed
+    if (audioSelect) {
+        audioSelect.addEventListener('change', (e) => {
+            localStorage.setItem('driftcare_audio', e.target.value);
+            console.log(`🎵 Audio preference saved: ${e.target.value}`);
+        });
+    }
 }
 
 // ========================================
@@ -112,37 +127,34 @@ function startSession() {
     
     state.isStarted = true;
     
+    // Get selected audio file
+    const selectedAudio = audioSelect ? audioSelect.value : 'calm.mp3';
+    bgAudio.src = `audio/${selectedAudio}`;
+    console.log(`🎵 Loading audio: ${selectedAudio}`);
+    
     // Hide start screen
     startScreen.classList.add('hidden');
     
     // Set random audio start position and fade in
-    if (bgAudio.readyState >= 1) {
-        // Metadata already loaded
+    bgAudio.addEventListener('loadedmetadata', () => {
         const randomStart = Math.random() * bgAudio.duration;
         bgAudio.currentTime = randomStart;
         console.log(`🎵 Audio starting at ${randomStart.toFixed(1)}s`);
         fadeInAudio(5000);
-    } else {
-        // Wait for metadata to load
-        bgAudio.addEventListener('loadedmetadata', () => {
-            const randomStart = Math.random() * bgAudio.duration;
-            bgAudio.currentTime = randomStart;
-            console.log(`🎵 Audio starting at ${randomStart.toFixed(1)}s`);
-            fadeInAudio(5000);
-        }, { once: true });
-        bgAudio.load(); // Trigger loading if needed
-    }
+    }, { once: true });
+    
+    bgAudio.load(); // Load the selected audio file
     
     // Fade wordmark to subtle
     setTimeout(() => {
         wordmark.classList.add('subtle');
     }, 2000);
     
-    // Start image cycling after 3 seconds to match the transition timing
+    // Start image cycling after 4 seconds to match the transition timing
     setTimeout(() => {
         startCycling();
         console.log('🌙 Image cycle started');
-    }, 3000);
+    }, 4000);
 }
 
 function fadeInAudio(duration) {
@@ -169,10 +181,10 @@ function fadeInAudio(duration) {
 function startCycling() {
     if (cycleInterval) clearInterval(cycleInterval);
     
-    // Cycle every 3 seconds for dynamic viewing
+    // Cycle every 4 seconds for dynamic viewing
     cycleInterval = setInterval(() => {
         nextScene();
-    }, 3000);
+    }, 4000);
 }
 
 function nextScene() {

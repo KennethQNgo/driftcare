@@ -252,7 +252,7 @@ body::after {
     object-fit: contain;           /* Show full image, no cropping */
     object-position: center center;
     opacity: 0;
-    transition: opacity 3s ease-in-out;  /* 3-second smooth fade */
+    transition: opacity 4s ease-in-out;  /* 4-second smooth fade */
     filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.4));
     will-change: opacity;
 }
@@ -300,6 +300,59 @@ body::after {
 #startScreen.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+/* ========================================
+   Audio Selector
+   ======================================== */
+
+#audioSelector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+#audioSelector label {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-transform: lowercase;
+    opacity: 0.8;
+}
+
+#audioSelect {
+    padding: 12px 24px;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--text-warm);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--gold-hairline);
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all var(--transition-fast) var(--ease-out);
+    backdrop-filter: blur(8px);
+    min-width: 200px;
+    text-align: center;
+}
+
+#audioSelect:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(197, 168, 128, 0.2);
+}
+
+#audioSelect:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(197, 168, 128, 0.1);
+}
+
+#audioSelect option {
+    background: var(--bg-dark);
+    color: var(--text-warm);
 }
 
 #startBtn {
