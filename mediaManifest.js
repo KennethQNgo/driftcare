@@ -1,5 +1,5 @@
 // Auto-generated media manifest
-// Generated on: 2025-12-25T20:07:04.710Z
+// Generated on: 2025-12-26T10:00:57.492Z
 // Total assets: 358
 
 window.mediaManifest = [
