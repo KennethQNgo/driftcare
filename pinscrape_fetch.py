@@ -6,13 +6,15 @@ Downloads cute puppy/kitten images using pinscrape.
 Based on the official pinscrape API examples.
 
 Usage:
-    python3 pinscrape_fetch.py
+    python3 pinscrape_fetch.py "cute farm animals"
+    python3 pinscrape_fetch.py "baby kittens" "adorable puppies"
 
 Requirements:
     pip3 install pinscrape
 """
 
 import os
+import sys
 from pinscrape import scraper, Pinterest
 
 # ----------------------------------------------------------------------
@@ -25,13 +27,8 @@ proxies = {}
 number_of_workers = 10
 images_to_download = 100
 
-# Search terms for cute animals
-SEARCHES = [
-    "cute puppies",
-    "cute kittens",
-    "adorable dogs",
-    "baby animals"
-]
+# Search terms from command line or default
+SEARCHES = sys.argv[1:] or ["cute farm animals"]
 
 # ----------------------------------------------------------------------
 def using_pinterest_apis(keyword, output_folder):
